@@ -1,3 +1,3 @@
-# esx_ktackle
+# Basically esx_ktackle, but no ESX is required
 
-Press SHIFT + G to tackle as a police
+Press SHIFT + E to tackle as a police
