@@ -12,10 +12,6 @@ local Keys = {
 	["NENTER"] = 201, ["N4"] = 108, ["N5"] = 60, ["N6"] = 107, ["N+"] = 96, ["N-"] = 97, ["N7"] = 117, ["N8"] = 61, ["N9"] = 118
 }
 
-ESX               				= nil
-local PlayerData                = {}
-local PoliceJob 				= 'police'
-
 local isTackling				= false
 local isGettingTackled			= false
 
@@ -25,25 +21,6 @@ local tackleVictimAnim			= 'mic_2_ig_11_intro_p_one'
 
 local lastTackleTime			= 0
 local isRagdoll					= false
-
-Citizen.CreateThread(function()
-	while ESX == nil do
-		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-		Citizen.Wait(0)
-	end
-
-	PlayerData = ESX.GetPlayerData()
-end)
-
-RegisterNetEvent('esx:playerLoaded')
-AddEventHandler('esx:playerLoaded', function(xPlayer)
-	PlayerData = xPlayer
-end)
-
-RegisterNetEvent('esx:setJob')
-AddEventHandler('esx:setJob', function(job)
-	PlayerData.job = job
-end)
 
 Citizen.CreateThread(function()
 	while true do
@@ -98,15 +75,37 @@ AddEventHandler('esx_kekke_tackle:playTackle', function()
 	isTackling = false
 
 end)
+function GetClosestPlayer()
+    local players = GetActivePlayers()
+    local closestDistance = -1
+    local closestPlayer = -1
+    local ply = GetPlayerPed(-1)
+    local plyCoords = GetEntityCoords(ply, 0)
+
+    for index,value in ipairs(players) do
+        local target = GetPlayerPed(value)
+        if(target ~= ply) then
+            local targetCoords = GetEntityCoords(GetPlayerPed(value), 0)
+            local distance = GetDistanceBetweenCoords(targetCoords['x'], targetCoords['y'], targetCoords['z'], plyCoords['x'], plyCoords['y'], plyCoords['z'], true)
+            if(closestDistance == -1 or closestDistance > distance) then
+                closestPlayer = value
+                closestDistance = distance
+            end
+        end
+    end
+
+    return closestPlayer, closestDistance
+end
 
 -- Main thread
 Citizen.CreateThread(function()
 	while true do
 		Wait(0)
 
-		if IsControlPressed(0, Keys['LEFTSHIFT']) and IsControlPressed(0, Keys['G']) and not isTackling and GetGameTimer() - lastTackleTime > 10 * 1000 and PlayerData.job.name == PoliceJob then
+		if IsControlPressed(0, Keys['LEFTSHIFT']) and IsControlPressed(0, Keys['E']) and not isTackling then
 			Citizen.Wait(10)
-			local closestPlayer, distance = ESX.Game.GetClosestPlayer()
+			local closestPlayer, distance = GetClosestPlayer();
+			print("ClosestPlayer == " .. GetPlayerName(closestPlayer) .. " and distance == " .. distance)
 
 			if distance ~= -1 and distance <= Config.TackleDistance and not isTackling and not isGettingTackled and not IsPedInAnyVehicle(GetPlayerPed(-1)) and not IsPedInAnyVehicle(GetPlayerPed(closestPlayer)) then
 				isTackling = true
