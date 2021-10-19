@@ -102,7 +102,7 @@ Citizen.CreateThread(function()
 	while true do
 		Wait(0)
 
-		if IsControlPressed(0, Keys['LEFTSHIFT']) and IsControlPressed(0, Keys['E']) and not isTackling then
+		if IsControlPressed(0, Keys['G']) and not isTackling then
 			Citizen.Wait(10)
 			local closestPlayer, distance = GetClosestPlayer();
 			print("ClosestPlayer == " .. GetPlayerName(closestPlayer) .. " and distance == " .. distance)
