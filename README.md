@@ -1,3 +1,5 @@
 # Basically esx_ktackle, but no ESX is required
 
-G
+Use G to tackle!
+
+Full credits to the original creators of this resource!
